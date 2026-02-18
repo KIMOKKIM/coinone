@@ -1,0 +1,5 @@
+.env
+trade_state.json
+__pycache__/
+test_analysis.py
+test_bithumb.py
