@@ -109,7 +109,10 @@ def get_market_data(symbol, timeframe):
 def get_balance():
     try:
         balance = exchange.fetch_balance()
-        return balance['KRW']['free'], balance['BTC']['free']
+        # 안전하게 접근: 키가 없으면 0 반환
+        krw_balance = balance.get('KRW', {}).get('free', 0)
+        btc_balance = balance.get('BTC', {}).get('free', 0)
+        return krw_balance, btc_balance
     except Exception as e:
         logger.error(f"잔고 조회 오류: {e}")
         return 0, 0
