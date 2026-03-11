@@ -130,9 +130,10 @@ class Bot:
         self.poll_seconds = int(os.getenv("POLL_SECONDS") or "20")
 
         self.min_order_krw = _safe_float(os.getenv("MIN_ORDER_KRW"), 5000.0)
-        self.buy_amount_pct = _safe_float(os.getenv("BUY_AMOUNT_PCT"), 0.05)  # 5%
+        # 백테스트 기본값(20%)과 맞추되, 환경변수로 덮어쓰기 허용
+        self.buy_amount_pct = _safe_float(os.getenv("BUY_AMOUNT_PCT"), 0.20)
 
-        # 기본값: 3일 백테스트 수익률 최적화 결과 (BB12/0.5, RSI 35~48, TP 0.25%, SL 0.6%)
+        # 기본값: backtest.py 1일 최적화 결과(하루 10회 내외 거래 기준)와 일치
         self.params = StrategyParams(
             bb_period=int(os.getenv("BB_PERIOD") or 12),
             bb_std=_safe_float(os.getenv("BB_STD"), 0.5),
@@ -140,9 +141,9 @@ class Bot:
             rsi_entry=_safe_float(os.getenv("RSI_ENTRY"), 35.0),
             rsi_exit=_safe_float(os.getenv("RSI_EXIT"), 48.0),
             take_profit_pct=_safe_float(os.getenv("TAKE_PROFIT_PCT"), 0.0025),
-            stop_loss_pct=_safe_float(os.getenv("STOP_LOSS_PCT"), 0.006),
-            max_hold_minutes=int(os.getenv("MAX_HOLD_MINUTES") or 60),
-            cooldown_seconds=int(os.getenv("COOLDOWN_SECONDS") or 60),
+            stop_loss_pct=_safe_float(os.getenv("STOP_LOSS_PCT"), 0.0050),
+            max_hold_minutes=int(os.getenv("MAX_HOLD_MINUTES") or 20),
+            cooldown_seconds=int(os.getenv("COOLDOWN_SECONDS") or 0),
         )
 
         # grid params (MODE=grid 일 때만 사용)
@@ -166,8 +167,8 @@ class Bot:
             }
         )
 
-        # 차트는 거래소별 지원 차이 때문에 별도로 둠 (기본: 빗썸)
-        self.chart_exchange = ccxt.bithumb({"enableRateLimit": True})
+        # 주문/잔고는 코인원, 차트는 업비트 OHLCV 사용
+        self.chart_exchange = ccxt.upbit({"enableRateLimit": True})
 
         self.oracle = None
         if OracleTradeStore is not None:
@@ -205,7 +206,7 @@ class Bot:
                 return df.iloc[-2]
             return df.iloc[-1]
         except Exception as e:
-            logger.error(f"[{symbol}] 차트 조회/지표 계산 실패: {e}")
+            logger.error(f"[{symbol}] 차트 조회/지표 계산 실패(업비트 OHLCV): {e}")
             return None
 
     def _fetch_coinone_last(self, symbol: str) -> Optional[float]:
@@ -533,13 +534,21 @@ class Bot:
             )
         logger.info("차트 소스: 빗썸 / 주문·잔고: 코인원")
 
+        loop_idx = 0
         while True:
+            loop_idx += 1
+            loop_start = time.time()
             try:
                 balances = self._fetch_balances()
                 for sym in self.symbols:
                     self.step_symbol(sym, balances)
             except Exception as e:
                 logger.error(f"메인 루프 예외: {e}")
+            finally:
+                elapsed = time.time() - loop_start
+                logger.info(
+                    f"[LOOP] #{loop_idx} 완료 (elapsed={elapsed:.2f}s, next_sleep={self.poll_seconds}s)"
+                )
 
             time.sleep(self.poll_seconds)
 
