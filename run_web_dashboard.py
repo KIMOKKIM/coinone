@@ -62,12 +62,34 @@ HTML = """<!doctype html>
           const r = await fetch('/api/status');
           const j = await r.json();
           document.getElementById('lastUpdated').textContent = '갱신: ' + j.ts;
-          document.getElementById('price').textContent = j.price ? j.price.toLocaleString() + ' ' + j.market : '--';
-          document.getElementById('krw').textContent = j.krw !== null ? j.krw.toLocaleString() : '--';
-          document.getElementById('btc').textContent = j.btc !== null ? j.btc : '--';
+          // price: show 0 as valid number
+          if (j.price === null || j.price === undefined) {
+            document.getElementById('price').textContent = '--';
+          } else {
+            document.getElementById('price').textContent = Number(j.price).toLocaleString() + ' ' + j.market;
+          }
+          // krw: show number (rounded) or --
+          if (j.krw === null || j.krw === undefined) {
+            document.getElementById('krw').textContent = '--';
+          } else {
+            document.getElementById('krw').textContent = Math.round(Number(j.krw)).toLocaleString();
+          }
+          // btc: show 8 decimals or --
+          if (j.btc === null || j.btc === undefined) {
+            document.getElementById('btc').textContent = '--';
+          } else {
+            document.getElementById('btc').textContent = Number(j.btc).toFixed(8);
+          }
           document.getElementById('signal').innerHTML = 'trend_ok=' + j.trend_ok + ' final_buy=' + j.final_buy;
           document.getElementById('mode').textContent = j.mode;
-          document.getElementById('msg').textContent = j.msg || '';
+          // user-friendly message: prefer server msg, otherwise warn if both balances are zero but price exists
+          let userMsg = '';
+          if (j.msg) {
+            userMsg = j.msg;
+          } else if ((j.krw === 0 || j.krw === 0.0) && (j.btc === 0 || j.btc === 0.0) && (j.price && Number(j.price) > 0)) {
+            userMsg = '잔고가 0으로 표시됩니다 — API 접근 제한(화이트리스트) 또는 키 문제일 수 있습니다.';
+          }
+          document.getElementById('msg').textContent = userMsg;
         } catch (e) {
           document.getElementById('msg').textContent = 'Error: ' + e;
         }
