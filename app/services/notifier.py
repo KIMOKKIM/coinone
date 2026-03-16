@@ -1,11 +1,33 @@
 from app.utils.logger import get_logger
+import os
+import requests
+
 logger = get_logger(__name__)
 
+# Telegram notifier (disabled unless env vars provided)
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+
+def _send_telegram(text: str):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        return False
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    try:
+        r = requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text}, timeout=5)
+        return r.status_code == 200
+    except Exception as e:
+        logger.error("Telegram send failed: %s", e)
+        return False
+
 def buy_signal(symbol, title, details):
-    logger.info("BUY SIGNAL %s %s", symbol, title)
+    msg = f"[BUY] {symbol} {title} {details}"
+    logger.info(msg)
+    _send_telegram(msg)
 
 def api_error(title, err):
-    logger.error("API ERROR %s %s", title, err)
+    msg = f"[API ERROR] {title}: {err}"
+    logger.error(msg)
+    _send_telegram(msg)
 
 # -*- coding: utf-8 -*-
 """
