@@ -73,8 +73,8 @@ HTML = """<!doctype html>
         }
       }
       fetchStatus();
-      // poll every 60 seconds
-      setInterval(fetchStatus, 60000);
+      // poll every 20 seconds
+      setInterval(fetchStatus, 20000);
     </script>
   </body>
 </html>
