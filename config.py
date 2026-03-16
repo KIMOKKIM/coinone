@@ -56,3 +56,7 @@ COINONE_SECRET_KEY = os.getenv("COINONE_SECRET_KEY", "")
 # backtest
 BACKTEST_START_DAYS = int(os.getenv("BACKTEST_START_DAYS", "90"))
 
+# additional risk defaults
+TRAILING_STOP_PCT = float(os.getenv("TRAILING_STOP_PCT", "0.02"))
+TARGET_30_PCT = float(os.getenv("TARGET_30_PCT", "0.30"))
+
