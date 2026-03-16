@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-\"\"\"Run backtests for multiple periods (30/90/180/365 days) and produce CSV summary.
+"""
+Run backtests for multiple periods (30/90/180/365 days) and produce CSV summary.
 
 Generates per-period result CSVs under data/ and a summary CSV results_summary.csv.
-\"\"\"
+"""
 import sys
 from pathlib import Path
 import math
