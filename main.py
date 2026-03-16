@@ -16,7 +16,7 @@ from app.exchange.coinone_client import CoinoneClient
 from app.strategy.signal_engine import SignalEngine
 from app.strategy.risk_manager import RiskManager
 from app.strategy.portfolio import Portfolio
-from app.services.trader import Trader
+from app.services.trader_core import Trader
 from app.services.backtester import Backtester
 from app.services.notifier import Notifier
 from app.services.scheduler import run_once
