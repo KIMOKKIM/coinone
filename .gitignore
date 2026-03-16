@@ -1,13 +1,8 @@
-.env
-trade_state.json
 __pycache__/
-
-# local scratch / tests
-test_analysis.py
-test_bithumb.py
-
-# keys (never commit)
-*.key
-*.pem
-*.pub
-ssh-key-*
+*.pyc
+*.log
+data/
+logs/
+state/
+dashboard_screenshot_*.png
+.env

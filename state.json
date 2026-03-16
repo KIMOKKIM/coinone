@@ -1,0 +1,10 @@
+{
+  "portfolio": {
+    "avg_entry_price": 0.0,
+    "quantity": 0.0,
+    "buy_stage": 0,
+    "sell_stage": 0,
+    "last_stop_time": null,
+    "recent_high": 0.0
+  }
+}
