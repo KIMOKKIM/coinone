@@ -35,6 +35,7 @@ STOP_LOSS_PCT = float(os.getenv("STOP_LOSS_PCT", "0.04"))
 TAKE_PROFIT_LEVELS = [float(x) for x in os.getenv("TAKE_PROFIT_LEVELS", "0.05,0.08,0.12").split(",")]
 TAKE_PROFIT_RATIOS = [float(x) for x in os.getenv("TAKE_PROFIT_RATIOS", "0.3,0.3,0.4").split(",")]
 ENABLE_TARGET_30_MODE = os.getenv("ENABLE_TARGET_30_MODE", "false").lower() in ("true", "1", "yes")
+VOL_BREAKOUT_K = float(os.getenv("VOL_BREAKOUT_K", "0.5"))
 
 MAX_CAPITAL_ALLOCATION = float(os.getenv("MAX_CAPITAL_ALLOCATION", "0.35"))
 BUY_SPLIT_RATIOS = [float(x) for x in os.getenv("BUY_SPLIT_RATIOS", "0.3,0.3,0.4").split(",")]
