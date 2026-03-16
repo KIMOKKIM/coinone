@@ -1,0 +1,20 @@
+[Unit]
+Description=Coinone BTC Spot Auto-Trader
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/coinone
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/home/ubuntu/coinone/.venv/bin:/usr/bin:/bin
+ExecStart=/home/ubuntu/coinone/.venv/bin/python /home/ubuntu/coinone/main.py --live
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=coinone-trader
+
+[Install]
+WantedBy=multi-user.target
+
